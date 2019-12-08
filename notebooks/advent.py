@@ -1,3 +1,13 @@
+def load_data(day, intcode=True):
+    day = str(day).zfill(2)
+    path = '../data/' + day + 'a.txt'
+    with open(path, 'r') as f:
+        data = f.read()
+    if intcode:
+        return [int(x) for x in data.strip().split(',')]
+    return data
+
+
 def opcode(raw_code):
     """Convert an opcode: ABCDE into {code, param_count, [modes]}
     
@@ -137,3 +147,5 @@ def run(intcode, i=0, halt=False, verbose=False):
         print('*************************')
         print()
     return intcode
+
+
