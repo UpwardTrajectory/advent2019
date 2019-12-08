@@ -18,6 +18,10 @@ def opcode(raw_code):
         2: 3, 
         3: 1, 
         4: 1, 
+        5: 2,
+        6: 2,
+        7: 3,
+        8: 3,
         99: 0
     }
     
@@ -36,7 +40,7 @@ def modeify(intcode, i):
     j = i + 1
     _opcode = opcode(intcode[i])
     params = intcode[j: j + _opcode['param_count']]
-    modes = _opcode['modes']#[:-1]
+    modes = _opcode['modes']
     
     mode_covert = {
         0: lambda x: intcode[x],    # position mode
@@ -44,16 +48,15 @@ def modeify(intcode, i):
     }
     
     output = [mode_covert[mode](param) for mode, param in zip(modes, params)]
-    #output.append(intcode[i + _opcode['param_count']])
     return output
+
 
 def get_new_pos(intcode, mode, i, delta_i):
     if mode == 0:
         return intcode[i + delta_i]
     elif mode == 1:
         return i + delta_i
-    
-            
+   
             
 def single_code(intcode, i, halt=False, verbose=False):
     """Process a single intstruction from intcode
@@ -64,7 +67,6 @@ def single_code(intcode, i, halt=False, verbose=False):
     _opcode = opcode(intcode[i])
     code = _opcode['code']
     modes = _opcode['modes']
-    
     args = modeify(intcode, i)
     
     if verbose:
@@ -85,15 +87,40 @@ def single_code(intcode, i, halt=False, verbose=False):
         new_value = int(input('Get this party started with input:'))
     elif code == 4:
         new_pos = get_new_pos(intcode, modes[-1], i, 1)
-        print('THIS SHOULD BE ZERO (unless final output):', intcode[new_pos])
+        print(intcode[new_pos])
+    elif code == 5:
+        if args[0]:
+            new_pointer = args[1]
+        else:
+            new_pointer = i + 3
+    elif code == 6:
+        if args[0] == 0:
+            new_pointer = args[1]
+        else:
+            new_pointer = i + 3
+    elif code == 7:
+        if args[0] < args[1]:
+            new_value = 1
+        else:
+            new_value = 0
+        new_pos = get_new_pos(intcode, modes[-1], i, 3)
+    elif code == 8:
+        if args[0] == args[1]:
+            new_value = 1
+        else:
+            new_value = 0
+        new_pos = get_new_pos(intcode, modes[-1], i, 3)
     
-    if code != 4:
+    if code not in [4, 5, 6]:
         intcode[new_pos] = new_value
         if verbose:
             print(f'updating intcode[{new_pos}] to {intcode[new_pos]}')
     
-    i += _opcode['param_count'] + 1
-    
+    if code not in [5, 6]:
+        i += _opcode['param_count'] + 1
+    else:
+        i = new_pointer
+        
     return intcode, i, halt
 
 
