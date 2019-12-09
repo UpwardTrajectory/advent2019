@@ -1,3 +1,7 @@
+import sys
+from io import StringIO
+
+
 def load_data(day, intcode=True):
     day = str(day).zfill(2)
     path = '../data/' + day + 'a.txt'
@@ -94,7 +98,7 @@ def single_code(intcode, i, halt=False, verbose=False):
         new_value = args[0] * args[1]
     elif code == 3:
         new_pos = get_new_pos(intcode, modes[-1], i, 1)
-        new_value = int(input('Get this party started with input:'))
+        new_value = int(input('>>'))
     elif code == 4:
         new_pos = get_new_pos(intcode, modes[-1], i, 1)
         print(intcode[new_pos])
@@ -135,6 +139,10 @@ def single_code(intcode, i, halt=False, verbose=False):
 
 
 def run(intcode, i=0, halt=False, verbose=False):
+    """Intcode Computer: given a list of integers, process the intcode.
+    
+    ex)  intcode = [3, 8, 1001, 8, 10, 8, 105, 1, 99]
+    """
     while not halt:
         if verbose:
             print('-----------------------------')
