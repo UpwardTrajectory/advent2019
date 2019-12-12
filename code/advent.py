@@ -2,6 +2,10 @@ import sys
 from io import StringIO
 
 
+class Computer():
+    
+    
+
 def load_data(day, intcode=True):
     day = str(day).zfill(2)
     path = '../data/' + day + 'a.txt'
